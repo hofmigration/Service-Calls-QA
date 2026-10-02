@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HOF Compliance Audit — Service Calls QA</title>
+<title>HOF Compliance Audit — Contacts</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -362,11 +362,11 @@ select option { background: #fff; color: var(--text); }
     <div class="hdr-badge">⬡</div>
     <div>
       <div class="hdr-name">HOF · Compliance Audit</div>
-      <div class="hdr-sub">Case Manager Call Quality</div>
+      <div class="hdr-sub">Sales Call Quality Assurance</div>
     </div>
   </div>
   <div class="hdr-right">
-    <span class="hpill dxb">📞 CALL AUDIT</span>
+    <span class="hpill dxb">🎧 SALES CALL QA</span>
     <span class="hpill live">● LIVE</span>
     <button class="btn-hdr" onclick="submitAudit()">⬆ Submit Audit</button>
   </div>
@@ -388,14 +388,19 @@ select option { background: #fff; color: var(--text); }
         </div>
       </div>
       <div class="score-grade" id="score-grade" style="color:#4ade80;">PERFECT</div>
-      <div class="score-hint"  id="score-hint">All criteria passing</div>
+      <div class="score-hint"  id="score-hint">All attributes passing</div>
     </div>
 
-    <div class="sb-section-label">Score Breakdown</div>
+    <div class="sb-section-label">Attribute Weightage</div>
     <div class="chip-list" id="chipList"></div>
 
     <div class="sb-actions">
-      <div class="autofail-notice" id="autofailNotice">⛔ CRITICAL BREACH — Call quality forced to 0</div>
+      <div class="autofail-notice" id="autofailNotice">⛔ CRITICAL — Score forced to 0</div>
+      <label class="email-toggle" for="sendEmail">
+        <input type="checkbox" id="sendEmail" onchange="saveEmailPref()">
+        <span class="et-box"></span>
+        <span class="et-text">✉ Email result to consultant<small id="emailHint">Sent from your Gmail · Misbah copied</small></span>
+      </label>
       <button class="btn-sb-submit" id="submitBtn" onclick="submitAudit()">⬆ Submit to Sheet</button>
       <button class="btn-sb-reset" onclick="resetForm()">↺ Reset Form</button>
     </div>
@@ -405,8 +410,8 @@ select option { background: #fff; color: var(--text); }
   <main class="main">
     <div class="page-heading">
       <div class="ph-text">
-        <h1>Call <em>Quality Audit</em> — Case Managers</h1>
-        <p>Mark No on any criterion to deduct its weight from the live score on the left.</p>
+        <h1>Sales <em>Call QA</em></h1>
+        <p>Mark No on any attribute to deduct its weightage from the live score on the left.</p>
       </div>
       <button class="btn-top" onclick="submitAudit()">⬆ Submit Audit to Sheet</button>
     </div>
@@ -419,39 +424,77 @@ select option { background: #fff; color: var(--text); }
       <div class="sec-body">
         <div class="row2">
           <div class="field">
-            <label>Case Manager *</label>
-            <select id="caseManager" required>
-              <option value="">— Select Case Manager —</option>
-              <option>Brenda</option><option>Yamina</option><option>Ali Tariq</option>
-              <option>Anwar</option><option>Tamjeed</option><option>Thushara</option>
-              <option>Rahima</option><option>Warda Badar</option><option>Hashim</option>
-              <option>Zaryab</option><option>Maryam Chand</option>
+            <label>Consultant Name *</label>
+            <select id="consultantName" required>
+              <option value="">— Select Consultant —</option>
+              <option>Mishal Fatima Bashir</option>
+              <option>Rabbiya Jilani</option>
+              <option>Muhammad Diean</option>
+              <option>Muhammad Shahzad Fiaz</option>
+              <option>Fatima Zahid</option>
+              <option>Ayesha Zahid</option>
+              <option>Syed Hussain Shah</option>
+              <option>Ahmad Ali</option>
+              <option>Ali Raza Qureshi</option>
+              <option>Mishal Naseem</option>
+              <option>Hamza Manzoor</option>
+              <option>Atika Zainab</option>
+              <option>Fahad Butt</option>
+              <option>Momin Ashfaq</option>
+              <option>Hammad Ahmad</option>
+              <option>Haleema Umar</option>
+              <option>Rida Faisal</option>
+              <option>Aimen Shakeel</option>
+              <option>Muhammad Awaad</option>
+              <option>Muhammad Hanzla</option>
+              <option>Tuba Ahmad</option>
+              <option>Faseeh</option>
+              <option>Danish Anwar</option>
+              <option>Muqeet Haseeb</option>
+              <option>Hassan Anwar</option>
             </select>
           </div>
           <div class="field">
             <label>Auditor Name *</label>
             <select id="auditorName" required>
               <option value="">— Select Auditor —</option>
-              <option>Misbah Hussain</option>
+              <option>Haris</option>
             </select>
           </div>
         </div>
         <div class="row2">
           <div class="field"><label>Audit Date *</label><input type="date" id="auditDate"/></div>
-          <div class="field"><label>Ziwo ID *</label><input type="text" id="ziwoId" placeholder="e.g. 24815"/></div>
+          <div class="field">
+            <label>Ziwo ID(s) *</label>
+            <div class="ziwo-row">
+              <input type="text" id="ziwoInput" placeholder="e.g. 24815" onkeydown="ziwoKey(event)"/>
+              <button type="button" class="btn-add" onclick="addZiwo()">+ Add</button>
+              <button type="button" class="btn-check" id="btnCheck" onclick="checkZiwoDupes()">⌕ Check</button>
+            </div>
+            <div class="chip-wrap" id="ziwoChips"></div>
+            <div id="ziwoDupResult"></div>
+            <div class="mini-hint">One sale can have several calls — add each Ziwo ID. Use Check to see if an ID was already audited.</div>
+          </div>
         </div>
         <div class="field">
           <label>HubSpot Link *</label>
           <input type="url" id="hubspotLink" placeholder="https://app.hubspot.com/contacts/..."/>
         </div>
         <div class="row2">
-          <div class="field"><label>Call Duration *</label><input type="text" id="callDuration" placeholder="e.g. 12:45"/></div>
+          <div class="field">
+            <label>Call Duration *</label>
+            <div class="dur-row">
+              <select id="durMin"></select><span class="dur-unit">min</span>
+              <select id="durSec"></select><span class="dur-unit">sec</span>
+              <span class="dur-preview" id="durPreview">—</span>
+            </div>
+          </div>
           <div class="field"><label>Comments / Observations</label><input type="text" id="comments" placeholder="Optional notes..."/></div>
         </div>
       </div>
     </div>
 
-    <!-- AUDIT SECTIONS (rendered from SECTIONS) -->
+    <!-- ATTRIBUTES (rendered from ATTRIBUTES) -->
     <div id="sectionsContainer"></div>
 
     <div class="bottom-wrap">
@@ -464,86 +507,223 @@ select option { background: #fff; color: var(--text); }
 <div class="toast" id="toast"></div>
 
 <style>
-/* section header toggles */
-.sec-hdr-right { display:flex; align-items:center; gap:8px; }
+.wt-badge {
+  font-family:'Space Mono',monospace; font-size:11px; font-weight:700;
+  background:#eef2ff; color:#4338ca; border:1px solid #c7d2fe;
+  border-radius:6px; padding:3px 8px; white-space:nowrap;
+}
+.sec-hdr-right { display:flex; align-items:center; gap:9px; }
+/* Ziwo multi-add */
+.ziwo-row { display:flex; gap:7px; align-items:stretch; }
+.ziwo-row input { flex:1; }
+.btn-add {
+  font-family:'Space Grotesk',sans-serif; font-size:11.5px; font-weight:700; letter-spacing:.03em;
+  padding:0 15px; border-radius:8px; cursor:pointer; white-space:nowrap; transition:all .16s;
+  background:#12266e; border:1px solid #12266e; color:#fff;
+}
+.btn-add:hover { background:#1b3596; }
+.btn-check {
+  font-family:'Space Grotesk',sans-serif; font-size:11.5px; font-weight:700; letter-spacing:.03em;
+  padding:0 14px; border-radius:8px; cursor:pointer; white-space:nowrap; transition:all .16s;
+  background:#fff; border:1px solid #c7d2fe; color:#3730a3;
+}
+.btn-check:hover { background:#eef2ff; border-color:#6366f1; }
+.btn-check:disabled { opacity:.55; cursor:wait; }
+.dup-line {
+  font-size:11px; font-weight:600; border-radius:7px; padding:7px 10px; margin-top:8px;
+  display:flex; gap:7px; align-items:flex-start;
+}
+.dup-line.ok   { background:#ecfdf5; border:1px solid #a7f3d0; color:#047857; }
+.dup-line.bad  { background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; }
+.dup-line.warn { background:#fffbeb; border:1px solid #fde68a; color:#b45309; }
+.zchip.dupe { background:#fef2f2; border-color:#fecaca; color:#b91c1c; }
+.chip-wrap { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.zchip {
+  display:inline-flex; align-items:center; gap:7px; font-family:'Space Mono',monospace;
+  font-size:11px; font-weight:700; background:#eef2ff; color:#3730a3;
+  border:1px solid #c7d2fe; border-radius:7px; padding:4px 6px 4px 10px;
+}
+.zchip button {
+  border:none; background:transparent; color:#6366f1; cursor:pointer;
+  font-size:14px; line-height:1; padding:0 2px; font-weight:700;
+}
+.zchip button:hover { color:#dc2626; }
+.mini-hint { font-size:10px; color:var(--muted); margin-top:6px; }
+/* duration picker */
+.dur-row { display:flex; align-items:center; gap:7px; }
+.dur-row select { width:auto; min-width:78px; }
+.dur-unit { font-size:11px; color:var(--muted); font-weight:600; }
+.dur-preview {
+  margin-left:4px; font-family:'Space Mono',monospace; font-size:12px; font-weight:700;
+  color:#3730a3; background:#eef2ff; border:1px solid #c7d2fe; border-radius:7px; padding:4px 10px;
+}
+.email-toggle {
+  display:flex; align-items:flex-start; gap:9px; cursor:pointer; user-select:none;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+  border-radius:8px; padding:9px 11px; transition:all .18s;
+}
+.email-toggle:hover { background:rgba(255,255,255,.1); }
+.email-toggle input { position:absolute; opacity:0; pointer-events:none; }
+.et-box {
+  flex-shrink:0; width:16px; height:16px; margin-top:1px; border-radius:4px;
+  border:1.5px solid rgba(255,255,255,.45); background:transparent; position:relative; transition:all .15s;
+}
+.email-toggle input:checked + .et-box { background:#4ade80; border-color:#4ade80; }
+.email-toggle input:checked + .et-box::after {
+  content:''; position:absolute; left:4.5px; top:1px; width:4px; height:8px;
+  border:solid #0b1a52; border-width:0 2px 2px 0; transform:rotate(45deg);
+}
+.email-toggle input:checked ~ .et-text { color:#fff; }
+.et-text { font-size:12px; font-weight:600; color:rgba(255,255,255,.7); line-height:1.35; }
+.et-text small { display:block; font-size:10px; font-weight:400; color:rgba(255,255,255,.4); margin-top:2px; }
 .hdr-toggle {
   font-family:'Space Grotesk',sans-serif; font-size:10px; font-weight:700; letter-spacing:.04em;
   padding:5px 11px; border-radius:7px; cursor:pointer; transition:all .16s; white-space:nowrap;
 }
-.hdr-toggle.na      { background:#fff; border:1px solid #cbd5e1; color:#64748b; }
-.hdr-toggle.na:hover{ border-color:#f59e0b; color:#b45309; }
-.hdr-toggle.na.on   { background:#fef3c7; border-color:#f59e0b; color:#b45309; }
-.hdr-toggle.crit      { background:#fff; border:1px solid #fecaca; color:#dc2626; }
-.hdr-toggle.crit:hover{ background:#fef2f2; border-color:#ef4444; }
-.hdr-toggle.crit.on   { background:linear-gradient(135deg,#dc2626,#991b1b); border-color:#dc2626; color:#fff; }
-/* greyed-out section when N/A */
-.section.sec-off .sec-body { opacity:.42; pointer-events:none; }
-.section.sec-off .sec-pts  { color:#b45309 !important; }
-.boost-tag { color:#16a34a; font-weight:700; font-size:10px; margin-left:6px; }
-.na-hint { font-size:10.5px; color:#b45309; background:#fffbeb; border:1px solid #fde68a;
-  border-radius:7px; padding:7px 10px; margin-bottom:9px; }
+.hdr-toggle.crit       { background:#fff; border:1px solid #fecaca; color:#dc2626; }
+.hdr-toggle.crit:hover { background:#fef2f2; border-color:#ef4444; }
+.hdr-toggle.crit.on    { background:linear-gradient(135deg,#dc2626,#991b1b); border-color:#dc2626; color:#fff;
+                         box-shadow:0 0 0 2px rgba(220,38,38,.25); }
 </style>
 
 <script>
 // ══════════════════════════════════════════════════════════
-// CONFIG — CASE MANAGER CALL AUDIT
-// ⚠ PASTE THE CALL-AUDIT WEB-APP URL BELOW (from its Apps Script deployment).
+// CONFIG — SALES CALL QA
+// ⚠ PASTE THE SALES-QA WEB-APP URL BELOW (from its Apps Script deployment).
 // ══════════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJsDV0MVNC7rJGqrlkcYS12mEvryIHuLzrwrKbkQsF5mAkXTWsJnhtleC5TIo5t2IP/exec";
-const TEAM = "CASE MANAGERS";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3x_NPlRgy2QTcRz7_K4yX9Y8G39sBcKT-wtXSwZhjg-d2lrS-8C9NbP2IAe4qyyCrYg/exec";
+const TEAM = "SALES QA";
 
-// Each item carries its own weight. `boost` = extra points the item receives
-// when the Questionnaire section is marked N/A (non-USA cases).
-const SECTIONS = [
-  { id:'opening',       n:1, icon:'👋', name:'Opening', items:[
-      { id:'openProfessional', label:'Professional opening', pts:5 },
-      { id:'openTone',         label:'Friendly tone',        pts:5 } ] },
-
-  { id:'process',       n:2, icon:'🔄', name:'Process', items:[
-      { id:'procExplained', label:'Process & timeline explained', pts:8, boost:6 },
-      { id:'procConfirmed', label:'Confirmed understanding',      pts:7, boost:4 } ] },
-
-  { id:'documents',     n:3, icon:'📄', name:'Documents', items:[
-      { id:'docList',  label:'Document list & reasons',  pts:9 },
-      { id:'docSteps', label:'Submission steps clear',   pts:6 } ] },
-
-  { id:'questionnaire', n:4, icon:'📋', name:'Questionnaire', usaOnly:true, naable:true, items:[
-      { id:'qExplained', label:'Explained & guided questionnaire', pts:6 },
-      { id:'qDoubts',    label:'Doubts resolved',                  pts:4 } ] },
-
-  { id:'queries',       n:5, icon:'❓', name:'Queries', items:[
-      { id:'qryAccurate',  label:'Answered accurately', pts:8 },
-      { id:'qryEscalated', label:'Escalated properly',  pts:7 } ] },
-
-  { id:'communication', n:6, icon:'🗣️', name:'Communication', items:[
-      { id:'commPace',    label:'Pace & listening', pts:7 },
-      { id:'commEmpathy', label:'Empathy',          pts:8 } ] },
-
-  { id:'critical',      n:7, icon:'⛔', name:'Critical Compliance', critical:true, items:[
-      { id:'critCompliance', label:'No false promises & privacy followed', pts:10 } ] },
-
-  { id:'closing',       n:8, icon:'✅', name:'Closing', items:[
-      { id:'closeNext', label:'Next steps & follow-up', pts:6 },
-      { id:'closeProf', label:'Ended professionally',   pts:4 } ] }
+// Table 2 — Attribute Weightage (totals 100%)
+const ATTRIBUTES = [
+  { id:'opening',     n:1,  icon:'👋', name:'Opening & Context',                pts:8,
+    desc:'Proper introduction and call context set' },
+  { id:'jobVerify',   n:2,  icon:'🧾', name:'Job Responsibilities Verification', pts:10,
+    desc:'Job role and responsibilities verified' },
+  { id:'rapport',     n:3,  icon:'🤝', name:'Rapport',                          pts:10,
+    desc:'Rapport built and maintained with the lead' },
+  { id:'discovery',   n:4,  icon:'🔍', name:'Discovery & Qualification',        pts:15,
+    desc:'Needs discovered and lead properly qualified' },
+  { id:'solutionAlign', n:5,  icon:'💡', name:'Solution Alignment & Mislead Information', pts:15, critical:true,
+    desc:'Solution aligned to the lead\'s profile with no misleading information' },
+  { id:'etiquette',   n:6,  icon:'🗣️', name:'Communication Etiquette',          pts:11,
+    desc:'Tone, clarity and professional etiquette maintained' },
+  { id:'deadAir',     n:7,  icon:'⏱️', name:'Dead Air & Call Control',          pts:8,
+    desc:'No excessive dead air; call kept under control' },
+  { id:'objection',   n:8,  icon:'🛡️', name:'Objection Handling',               pts:11,
+    desc:'Objections handled confidently and accurately' },
+  { id:'closing',     n:9,  icon:'✅', name:'Closing & Next Steps',             pts:7,
+    desc:'Clear close with agreed next steps' },
+  { id:'disposition', n:10, icon:'📝', name:'Disposition & Notes Accuracy',     pts:5,
+    desc:'Correct disposition selected and notes accurate' }
 ];
 
-const SB_LABEL = {
-  opening:'Opening', process:'Process', documents:'Documents', questionnaire:'Questionnaire',
-  queries:'Queries', communication:'Communication', critical:'Critical', closing:'Closing'
-};
-
-const answers = {};              // itemId -> 'YES' | 'NO' | null
-let questionnaireNA = false;     // section 4 marked N/A (non-USA)
-let criticalBreach  = false;     // forces the whole score to 0 (reversible)
+const TOTAL_POSSIBLE = ATTRIBUTES.reduce((t,a) => t + a.pts, 0); // 100
+const answers = {};   // attributeId -> 'YES' | 'NO' | null
+let criticalBreach = false;  // set by the Critical button — forces the whole score to 0 (reversible)
+let ziwoIds = [];            // one sale can span several calls — all IDs go into one sheet cell
+const dupInfo = {};          // ziwoId -> array of prior audits found in the sheet
 const CIRC = 313;
 
-SECTIONS.forEach(s => s.items.forEach(i => answers[i.id] = null));
+/* ─── ZIWO IDs (multi-add) ───────────────────── */
+function addZiwo() {
+  const input = document.getElementById('ziwoInput');
+  const raw = input.value.trim();
+  if (!raw) { showToast('Enter a Ziwo ID first.','error'); return; }
+  // allow pasting several at once: "111, 222 333"
+  const parts = raw.split(/[\s,;]+/).filter(Boolean);
+  let added = 0, dupes = 0;
+  parts.forEach(p => {
+    if (ziwoIds.indexOf(p) !== -1) { dupes++; return; }
+    ziwoIds.push(p); added++;
+  });
+  input.value = '';
+  input.focus();
+  renderZiwo();
+  if (added && dupes) showToast(`Added ${added}. Skipped ${dupes} already in the list.`,'success');
+  else if (dupes)     showToast('That Ziwo ID is already added.','error');
+}
+function removeZiwo(i) { ziwoIds.splice(i,1); renderZiwo(); }
+function ziwoKey(e) { if (e.key === 'Enter') { e.preventDefault(); addZiwo(); } }
+function renderZiwo() {
+  document.getElementById('ziwoChips').innerHTML = ziwoIds.map((z,i) =>
+    `<span class="zchip${dupInfo[z] && dupInfo[z].length ? ' dupe' : ''}">${z}<button type="button" title="Remove" onclick="removeZiwo(${i})">×</button></span>`
+  ).join('');
+}
+
+/* ─── DUPLICATE CHECK ────────────────────────── */
+// Asks the sheet whether these Ziwo IDs have already been audited.
+function checkZiwoDupes() {
+  const pending = document.getElementById('ziwoInput').value.trim();
+  const ids = pending ? pending.split(/[\s,;]+/).filter(Boolean) : ziwoIds.slice();
+  const box = document.getElementById('ziwoDupResult');
+
+  if (!ids.length) { box.innerHTML = '<div class="dup-line warn">Enter or add a Ziwo ID first.</div>'; return; }
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0) {
+    box.innerHTML = '<div class="dup-line warn">Web-app URL not set — cannot check the sheet.</div>'; return;
+  }
+
+  const btn = document.getElementById('btnCheck');
+  btn.disabled = true; btn.textContent = '⌕ Checking…';
+  box.innerHTML = '<div class="dup-line warn">Checking the sheet…</div>';
+
+  fetch(APPS_SCRIPT_URL, {
+    method:'POST', headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({ action:'checkZiwo', ziwoIds: ids })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (res.status !== 'success') throw new Error(res.message || 'Lookup failed');
+    let html = '';
+    ids.forEach(id => {
+      const hits = res.results[id] || [];
+      dupInfo[id] = hits;
+      if (!hits.length) {
+        html += `<div class="dup-line ok">✓ <span><b>${id}</b> — not audited before.</span></div>`;
+      } else {
+        const detail = hits.map(m =>
+          `${m.date} · ${m.consultant} · by ${m.auditor} · ${m.score}%`).join('<br>');
+        html += `<div class="dup-line bad">⛔ <span><b>${id}</b> — already audited ${hits.length} time${hits.length>1?'s':''}:<br>${detail}</span></div>`;
+      }
+    });
+    box.innerHTML = html;
+    renderZiwo();
+  })
+  .catch(e => { box.innerHTML = `<div class="dup-line warn">Could not check right now: ${e.message}</div>`; })
+  .finally(() => { btn.disabled = false; btn.textContent = '⌕ Check'; });
+}
+
+/* ─── CALL DURATION (picker) ─────────────────── */
+function buildDuration() {
+  const mm = document.getElementById('durMin'), ss = document.getElementById('durSec');
+  let m = '<option value="">– min –</option>';
+  for (let i = 0; i <= 500; i++) m += `<option value="${i}">${i}</option>`;
+  mm.innerHTML = m;
+  let s = '<option value="">– sec –</option>';
+  for (let i = 0; i <= 59; i++) s += `<option value="${i}">${String(i).padStart(2,'0')}</option>`;
+  ss.innerHTML = s;
+  mm.addEventListener('change', showDuration);
+  ss.addEventListener('change', showDuration);
+}
+function durationValue() {
+  const m = document.getElementById('durMin').value, s = document.getElementById('durSec').value;
+  if (m === '' && s === '') return '';
+  return `${parseInt(m||0,10)}:${String(parseInt(s||0,10)).padStart(2,'0')}`;
+}
+function showDuration() {
+  const v = durationValue();
+  document.getElementById('durPreview').textContent = v || '—';
+}
+
+ATTRIBUTES.forEach(a => answers[a.id] = null);
 
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('auditDate').value = new Date().toISOString().split('T')[0];
+  buildDuration();
+  loadEmailPref();
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0)
     document.getElementById('config-banner').classList.add('show');
-  renderSections();
+  renderAttributes();
   renderChips();
   refreshScore();
   warmup();
@@ -554,61 +734,29 @@ function warmup() {
   try { fetch(APPS_SCRIPT_URL, { method:'GET', mode:'no-cors' }).catch(()=>{}); } catch(e){}
 }
 
-/* ─── WEIGHTS ────────────────────────────────── */
-// An item's live weight: base points, plus its share of the Questionnaire's
-// 10 points when that section is N/A.
-function itemPts(item) {
-  return item.pts + (questionnaireNA && item.boost ? item.boost : 0);
-}
-function sectionActive(sec) { return !(sec.naable && questionnaireNA); }
-function sectionMax(sec) {
-  if (!sectionActive(sec)) return 0;
-  return sec.items.reduce((t,i) => t + itemPts(i), 0);
-}
-function sectionEarned(sec) {
-  if (!sectionActive(sec)) return 0;
-  return sec.items.reduce((t,i) => t + (answers[i.id] === 'NO' ? 0 : itemPts(i)), 0);
-}
-
 /* ─── RENDER ─────────────────────────────────── */
-function renderSections() {
-  document.getElementById('sectionsContainer').innerHTML = SECTIONS.map(sec => {
-    const off = !sectionActive(sec);
-    const rows = sec.items.map((item, idx) => {
-      const boosted = questionnaireNA && item.boost;
-      return `
-        <div class="yn-group" id="grp-${item.id}">
-          <span class="yn-key">${sec.n}.${idx+1}</span>
-          <span class="yn-lbl">${item.label}
-            <span style="color:var(--muted);font-weight:600;"> — ${itemPts(item)}%</span>
-            ${boosted ? `<span class="boost-tag">+${item.boost}</span>` : ''}
-          </span>
-          <div class="yn-btns">
-            <button class="yn-btn yes" data-item="${item.id}" data-val="YES">✓ Yes</button>
-            <button class="yn-btn no"  data-item="${item.id}" data-val="NO">✗ No</button>
-          </div>
-        </div>`;
-    }).join('');
-
-    const toggles =
-      (sec.naable  ? `<button class="hdr-toggle na${questionnaireNA?' on':''}" onclick="toggleQuestionnaireNA()">${questionnaireNA?'✓ N/A — Non-USA':'— N/A'}</button>` : '') +
-      (sec.critical ? `<button class="hdr-toggle crit${criticalBreach?' on':''}" onclick="toggleCriticalBreach()">${criticalBreach?'✓ Breach — score 0':'⚠ Critical Breach'}</button>` : '');
-
-    return `
-    <div class="section${off?' sec-off':''}" id="sec-${sec.id}">
+function renderAttributes() {
+  document.getElementById('sectionsContainer').innerHTML = ATTRIBUTES.map(a => `
+    <div class="section" id="sec-${a.id}">
       <div class="sec-hdr">
-        <div class="sec-title"><span class="sec-icon">${sec.icon}</span> ${sec.n}. ${sec.name}${sec.usaOnly?' <span style="font-size:10px;color:var(--muted);font-weight:600;">· USA only</span>':''}</div>
+        <div class="sec-title"><span class="sec-icon">${a.icon}</span> ${a.n}. ${a.name}</div>
         <div class="sec-hdr-right">
-          ${toggles}
-          <div class="sec-pts" id="pts-${sec.id}">${sectionEarned(sec)} / ${sectionMax(sec)}</div>
+          ${a.critical ? `<button class="hdr-toggle crit${criticalBreach?' on':''}" onclick="toggleCriticalBreach()">${criticalBreach?'✓ Critical — score 0':'⚠ Critical'}</button>` : ''}
+          <span class="wt-badge">${a.pts}%</span>
+          <div class="sec-pts" id="pts-${a.id}">${a.pts} / ${a.pts}</div>
         </div>
       </div>
       <div class="sec-body">
-        ${off ? '<div class="na-hint">Marked N/A — these 10 points move to section 2 (Process).</div>' : ''}
-        ${rows}
+        <div class="yn-group" id="grp-${a.id}">
+          <span class="yn-key">${a.n}</span>
+          <span class="yn-lbl">${a.desc}<span style="color:var(--muted);font-weight:600;"> — ${a.pts}%</span></span>
+          <div class="yn-btns">
+            <button class="yn-btn yes" data-attr="${a.id}" data-val="YES">✓ Yes</button>
+            <button class="yn-btn no"  data-attr="${a.id}" data-val="NO">✗ No</button>
+          </div>
+        </div>
       </div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 
   document.getElementById('sectionsContainer')
     .querySelectorAll('.yn-btn').forEach(b => b.addEventListener('click', () => handleYN(b)));
@@ -616,9 +764,9 @@ function renderSections() {
 }
 
 function restoreSelections() {
-  Object.keys(answers).forEach(id => {
-    const val = answers[id]; if (!val) return;
-    const grp = document.getElementById('grp-' + id); if (!grp) return;
+  ATTRIBUTES.forEach(a => {
+    const val = answers[a.id]; if (!val) return;
+    const grp = document.getElementById('grp-' + a.id); if (!grp) return;
     const btn = grp.querySelector(`.yn-btn[data-val="${val}"]`); if (!btn) return;
     btn.classList.add('active');
     grp.classList.add(val === 'YES' ? 'ay' : 'an');
@@ -626,14 +774,14 @@ function restoreSelections() {
 }
 
 function renderChips() {
-  document.getElementById('chipList').innerHTML = SECTIONS.map(sec =>
-    `<div class="sb-chip pass" data-key="${sec.id}"><span>${SB_LABEL[sec.id]}</span><span class="cp" id="cp-${sec.id}">—</span></div>`
+  document.getElementById('chipList').innerHTML = ATTRIBUTES.map(a =>
+    `<div class="sb-chip pass" data-key="${a.id}"><span>${a.name}</span><span class="cp" id="cp-${a.id}">${a.pts}%</span></div>`
   ).join('');
 }
 
 /* ─── INTERACTION ────────────────────────────── */
 function handleYN(btn) {
-  const id = btn.dataset.item, val = btn.dataset.val;
+  const id = btn.dataset.attr, val = btn.dataset.val;
   answers[id] = val;
   const grp = btn.closest('.yn-group');
   grp.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('active'));
@@ -643,34 +791,25 @@ function handleYN(btn) {
   refreshScore();
 }
 
-// Section 4 N/A — its 10 points move into Process (8+6=14, 7+4=11).
-// Clicking again reverses it.
-function toggleQuestionnaireNA() {
-  questionnaireNA = !questionnaireNA;
-  if (questionnaireNA) SECTIONS.find(s=>s.naable).items.forEach(i => answers[i.id] = null);
-  renderSections();
-  refreshScore();
-  showToast(questionnaireNA
-    ? 'Questionnaire N/A — 10% moved to Process (14% + 11%).'
-    : 'Questionnaire re-enabled — Process back to 8% + 7%.', questionnaireNA ? 'success' : 'success');
-}
-
-// Critical breach — forces total to 0. Clicking again reverses it.
+/* ─── CRITICAL BREACH ────────────────────────── */
+// Fired from the Critical button on "Solution Alignment & Mislead Information".
+// Forces the whole audit to 0. Clicking again fully reverses it.
 function toggleCriticalBreach() {
   criticalBreach = !criticalBreach;
-  renderSections();
+  renderAttributes();
   refreshScore();
   showToast(criticalBreach
-    ? '⛔ Critical breach — call quality set to 0.'
-    : '↩ Critical breach removed — score restored.', criticalBreach ? 'error' : 'success');
+    ? '⛔ Critical — misleading information. Whole score set to 0.'
+    : '↩ Critical removed — score restored.', criticalBreach ? 'error' : 'success');
 }
 
 /* ─── SCORING ────────────────────────────────── */
+// Starts at 100. Marking an attribute "No" removes its full weightage.
+// A critical breach overrides everything and forces 0.
+function attrEarned(a) { return answers[a.id] === 'NO' ? 0 : a.pts; }
 function calcScore() {
   if (criticalBreach) return 0;
-  let total = 0;
-  SECTIONS.forEach(sec => { total += sectionEarned(sec); });
-  return Math.round(total * 10) / 10;
+  return Math.round(ATTRIBUTES.reduce((t,a) => t + attrEarned(a), 0) * 10) / 10;
 }
 
 function refreshScore() {
@@ -678,59 +817,63 @@ function refreshScore() {
   document.getElementById('total-score').textContent = total;
 
   const arc = document.getElementById('ring-arc');
-  arc.style.strokeDashoffset = CIRC - (total/100)*CIRC;
+  arc.style.strokeDashoffset = CIRC - (total/TOTAL_POSSIBLE)*CIRC;
   arc.style.stroke = total>=85 ? '#4ade80' : total>=60 ? '#fbbf24' : '#f87171';
 
   const g = document.getElementById('score-grade'), h = document.getElementById('score-hint');
-  if (criticalBreach)   { g.style.color='#f87171'; g.textContent='CRITICAL BREACH'; h.textContent='Call quality forced to 0'; }
-  else if (total===100) { g.style.color='#4ade80'; g.textContent='PERFECT';     h.textContent='All criteria passing'; }
-  else if (total>=85)   { g.style.color='#4ade80'; g.textContent='COMPLIANT';   h.textContent='Above 85% target'; }
-  else if (total>=60)   { g.style.color='#fbbf24'; g.textContent='NEEDS WORK';  h.textContent='Below 85% target'; }
-  else                  { g.style.color='#f87171'; g.textContent='CRITICAL';    h.textContent='Significant gaps found'; }
+  if (criticalBreach) { g.style.color='#f87171'; g.textContent='CRITICAL BREACH'; h.textContent='Misleading info — score forced to 0'; }
+  else if (total===100)    { g.style.color='#4ade80'; g.textContent='PERFECT';    h.textContent='All attributes passing'; }
+  else if (total>=85) { g.style.color='#4ade80'; g.textContent='COMPLIANT';  h.textContent='Above 85% target'; }
+  else if (total>=60) { g.style.color='#fbbf24'; g.textContent='NEEDS WORK'; h.textContent='Below 85% target'; }
+  else                { g.style.color='#f87171'; g.textContent='CRITICAL';   h.textContent='Significant gaps found'; }
 
-  document.getElementById('autofailNotice').classList.toggle('show', criticalBreach);
+  const notice = document.getElementById('autofailNotice');
+  if (notice) notice.classList.toggle('show', criticalBreach);
 
-  SECTIONS.forEach(sec => {
-    const earned = criticalBreach ? 0 : sectionEarned(sec), max = sectionMax(sec);
-    const pEl = document.getElementById('pts-'+sec.id);
-    if (pEl) { pEl.textContent = `${earned} / ${max}`; pEl.className = 'sec-pts' + (max>0 && earned<max ? ' z' : ''); }
-    const chip = document.querySelector(`.sb-chip[data-key="${sec.id}"]`), cp = document.getElementById('cp-'+sec.id);
+  ATTRIBUTES.forEach(a => {
+    const earned = criticalBreach ? 0 : attrEarned(a);
+    const pEl = document.getElementById('pts-'+a.id);
+    if (pEl) { pEl.textContent = `${earned} / ${a.pts}`; pEl.className = 'sec-pts' + (earned < a.pts ? ' z' : ''); }
+    const chip = document.querySelector(`.sb-chip[data-key="${a.id}"]`), cp = document.getElementById('cp-'+a.id);
     if (chip && cp) {
-      if (!sectionActive(sec)) { cp.textContent = 'N/A'; chip.className = 'sb-chip na-c'; }
-      else { cp.textContent = `${earned}/${max}`; chip.className = 'sb-chip ' + (earned===max ? 'pass' : 'fail'); }
+      cp.textContent = `${earned}/${a.pts}`;
+      chip.className = 'sb-chip ' + (earned === a.pts ? 'pass' : 'fail');
     }
   });
 }
 
 /* ─── SUBMIT ─────────────────────────────────── */
 function submitAudit() {
-  const cm = document.getElementById('caseManager').value,
-        au = document.getElementById('auditorName').value,
-        zw = document.getElementById('ziwoId').value.trim(),
-        hl = document.getElementById('hubspotLink').value.trim(),
-        du = document.getElementById('callDuration').value.trim();
+  // include anything typed but not yet added, so nothing is lost
+  const pending = document.getElementById('ziwoInput').value.trim();
+  if (pending) addZiwo();
 
-  if (!cm || !au || !zw || !hl || !du) {
-    showToast('Fill in Case Manager, Auditor, Ziwo ID, HubSpot link and Call duration.','error'); return;
+  const cn = document.getElementById('consultantName').value,
+        au = document.getElementById('auditorName').value,
+        zw = ziwoIds.join(', '),
+        hl = document.getElementById('hubspotLink').value.trim(),
+        du = durationValue();
+
+  if (!cn || !au || !ziwoIds.length || !hl || !du) {
+    showToast('Fill in Consultant, Auditor, at least one Ziwo ID, HubSpot link and Call duration.','error'); return;
   }
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0) {
-    showToast('Call-audit web-app URL not set. Paste it into the code first.','error'); return;
+    showToast('Sales QA web-app URL not set. Paste it into the code first.','error'); return;
   }
 
   const total = calcScore();
   const payload = {
-    caseManager: cm, auditorName: au, auditDate: document.getElementById('auditDate').value,
-    ziwoId: zw, hubspotLink: hl, callDuration: du,
+    consultantName: cn, auditorName: au, auditDate: document.getElementById('auditDate').value,
+    ziwoId: zw, ziwoCount: ziwoIds.length, hubspotLink: hl, callDuration: du,
     comments: document.getElementById('comments').value,
-    questionnaireNA: questionnaireNA ? 'YES' : '',
+    score: total, scorePercent: total, team: TEAM,
     criticalBreach: criticalBreach ? 'YES' : '',
-    score: total, scorePercent: total, team: TEAM
+    sendEmail: document.getElementById('sendEmail').checked
   };
-  // per-section earned/max, and every individual answer
-  SECTIONS.forEach(sec => {
-    payload['sec_' + sec.id] = sectionActive(sec)
-      ? (criticalBreach ? 0 : sectionEarned(sec)) + '/' + sectionMax(sec) : 'N/A';
-    sec.items.forEach(i => { payload[i.id] = sectionActive(sec) ? (answers[i.id] || 'YES') : 'N/A'; });
+  // each attribute: the answer, plus its earned/max
+  ATTRIBUTES.forEach(a => {
+    payload[a.id] = answers[a.id] || 'YES';
+    payload['pts_' + a.id] = (criticalBreach ? 0 : attrEarned(a)) + '/' + a.pts;
   });
 
   // Optimistic: confirm + reset now, POST in the background.
@@ -739,21 +882,42 @@ function submitAudit() {
 
   fetch(APPS_SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(payload) })
     .then(r => r.json())
-    .then(res => { if (res.status !== 'success') throw new Error(res.message || 'Unknown error'); })
+    .then(res => {
+      if (res.status !== 'success') throw new Error(res.message || 'Unknown error');
+      // The audit is saved either way; the email is reported separately.
+      if (res.email === 'sent')            showToast('✉ Result emailed to ' + cn + (res.emailCc ? ' (cc ' + res.emailCc + ')' : ''), 'success');
+      else if (res.email === 'no-address') showToast('Saved — but no email on file for ' + cn + '. Add it in the Consultant Emails tab.', 'error');
+      else if (res.email === 'failed')     showToast('Saved — but the email failed: ' + (res.emailError || 'unknown'), 'error');
+    })
     .catch(e => showToast('Submission failed — please re-enter: ' + e.message, 'error'));
 }
 
 /* ─── RESET ──────────────────────────────────── */
 function resetForm() {
-  questionnaireNA = false;
-  criticalBreach  = false;
-  SECTIONS.forEach(s => s.items.forEach(i => answers[i.id] = null));
-  ['caseManager','auditorName','ziwoId','hubspotLink','callDuration','comments'].forEach(id => {
+  criticalBreach = false;
+  ATTRIBUTES.forEach(a => answers[a.id] = null);
+  ziwoIds = [];
+  Object.keys(dupInfo).forEach(k => delete dupInfo[k]);
+  document.getElementById('ziwoDupResult').innerHTML = '';
+  renderZiwo();
+  ['consultantName','auditorName','ziwoInput','hubspotLink','comments'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
+  document.getElementById('durMin').value = '';
+  document.getElementById('durSec').value = '';
+  showDuration();
   document.getElementById('auditDate').value = new Date().toISOString().split('T')[0];
-  renderSections();
+  renderAttributes();
   refreshScore();
+}
+
+/* ─── EMAIL PREFERENCE ───────────────────────── */
+// Remembered per browser so the auditor sets it once.
+function saveEmailPref() {
+  try { localStorage.setItem('salesqa_sendEmail', document.getElementById('sendEmail').checked ? '1' : '0'); } catch (e) {}
+}
+function loadEmailPref() {
+  try { document.getElementById('sendEmail').checked = localStorage.getItem('salesqa_sendEmail') === '1'; } catch (e) {}
 }
 
 function showToast(msg, type='success') {
